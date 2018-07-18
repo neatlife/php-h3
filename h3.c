@@ -52,92 +52,92 @@ PHP_INI_END()
 /* Every user-visible function in PHP should document itself in the source */
 PHP_FUNCTION(degsToRads)
 {
-	zend_long resolution;
-	double lat, lon;
+    zend_long resolution;
+    double lat, lon;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ddl", &lat, &lon, &resolution) == FAILURE) {
-		return;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "ddl", &lat, &lon, &resolution) == FAILURE) {
+        return;
+    }
 
-	GeoCoord location;
+    GeoCoord location;
     location.lat = degsToRads(lat);
     location.lon = degsToRads(lon);
 
     H3Index indexed = geoToH3(&location, resolution);
 
-	zend_resource *index_resource;
-	index_resource = zend_register_resource(&indexed, le_h3_index);
+    zend_resource *index_resource;
+    index_resource = zend_register_resource(&indexed, le_h3_index);
 
-	RETURN_RES(index_resource);
+    RETURN_RES(index_resource);
 }
 
 PHP_FUNCTION(h3ToGeoBoundary)
 {
-	zval *index_resource_zval = NULL;
-	zend_long resolution;
-	double lat, lon;
+    zval *index_resource_zval = NULL;
+    zend_long resolution;
+    double lat, lon;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
-		return;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
 
-	H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
-	// Get the vertices of the H3 index.
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+    // Get the vertices of the H3 index.
     GeoBoundary boundary;
     h3ToGeoBoundary(indexed, &boundary);
 
-	zval boundary_arr;
-	ZVAL_NEW_PERSISTENT_ARR(&boundary_arr);
-	zend_hash_init(Z_ARRVAL(boundary_arr), boundary.numVerts, NULL, ZVAL_PTR_DTOR, 1);
+    zval boundary_arr;
+    ZVAL_NEW_PERSISTENT_ARR(&boundary_arr);
+    zend_hash_init(Z_ARRVAL(boundary_arr), boundary.numVerts, NULL, ZVAL_PTR_DTOR, 1);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
-		zval *lat = NULL, *lon = NULL;
-		ZVAL_LONG(lat, boundary.verts[v].lat);
-		ZVAL_LONG(lon, boundary.verts[v].lon);
+        zval *lat = NULL, *lon = NULL;
+        ZVAL_LONG(lat, boundary.verts[v].lat);
+        ZVAL_LONG(lon, boundary.verts[v].lon);
 
-		zval lat_lon_arr;
-		ZVAL_NEW_PERSISTENT_ARR(&lat_lon_arr);
-		zend_hash_init(Z_ARRVAL(lat_lon_arr), 2, NULL, ZVAL_PTR_DTOR, 1);
-		zend_hash_index_add(Z_ARRVAL(lat_lon_arr), v, lat);
-		zend_hash_index_add(Z_ARRVAL(lat_lon_arr), v, lon);
+        zval lat_lon_arr;
+        ZVAL_NEW_PERSISTENT_ARR(&lat_lon_arr);
+        zend_hash_init(Z_ARRVAL(lat_lon_arr), 2, NULL, ZVAL_PTR_DTOR, 1);
+        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), v, lat);
+        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), v, lon);
 
-		zend_hash_index_add(Z_ARRVAL(boundary_arr), v, &lat_lon_arr);
+        zend_hash_index_add(Z_ARRVAL(boundary_arr), v, &lat_lon_arr);
     }
 
-	RETURN_ARR(Z_ARRVAL(boundary_arr));
+    RETURN_ARR(Z_ARRVAL(boundary_arr));
 }
 
 PHP_FUNCTION(h3ToGeo)
 {
-	zval *index_resource_zval = NULL;
-	zend_long resolution;
-	double lat, lon;
+    zval *index_resource_zval = NULL;
+    zend_long resolution;
+    double lat, lon;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
-		return;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
 
-	H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
 
-	// Get the center coordinates.
+    // Get the center coordinates.
     GeoCoord center;
     h3ToGeo(indexed, &center);
 
     lat = radsToDegs(center.lat);
     lon = radsToDegs(center.lon);
 
-	zval *lat_zval = NULL, *lon_zval = NULL;
-	ZVAL_DOUBLE(lat_zval, radsToDegs(center.lat));
-	ZVAL_DOUBLE(lon_zval, radsToDegs(center.lon));
+    zval *lat_zval = NULL, *lon_zval = NULL;
+    ZVAL_DOUBLE(lat_zval, radsToDegs(center.lat));
+    ZVAL_DOUBLE(lon_zval, radsToDegs(center.lon));
 
-	zval lat_lon_arr;
-	ZVAL_NEW_PERSISTENT_ARR(&lat_lon_arr);
-	zend_hash_init(Z_ARRVAL(lat_lon_arr), 2, NULL, ZVAL_PTR_DTOR, 1);
-	zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, lat_zval);
-	zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, lon_zval);
+    zval lat_lon_arr;
+    ZVAL_NEW_PERSISTENT_ARR(&lat_lon_arr);
+    zend_hash_init(Z_ARRVAL(lat_lon_arr), 2, NULL, ZVAL_PTR_DTOR, 1);
+    zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, lat_zval);
+    zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, lon_zval);
 
-	RETURN_ARR(Z_ARRVAL(lat_lon_arr));
+    RETURN_ARR(Z_ARRVAL(lat_lon_arr));
 }
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
@@ -151,8 +151,8 @@ PHP_FUNCTION(h3ToGeo)
 /* Uncomment this function if you have INI entries
 static void php_h3_init_globals(zend_h3_globals *h3_globals)
 {
-	h3_globals->global_value = 0;
-	h3_globals->global_string = NULL;
+    h3_globals->global_value = 0;
+    h3_globals->global_string = NULL;
 }
 */
 /* }}} */
@@ -161,12 +161,12 @@ static void php_h3_init_globals(zend_h3_globals *h3_globals)
  */
 PHP_MINIT_FUNCTION(h3)
 {
-	/* If you have INI entries, uncomment these lines
-	REGISTER_INI_ENTRIES();
-	*/
-	le_h3_index = zend_register_list_destructors_ex(NULL, NULL, "h3_index", module_number);
-	le_h3_boundary = zend_register_list_destructors_ex(NULL, NULL, "h3_boundary", module_number);
-	return SUCCESS;
+    /* If you have INI entries, uncomment these lines
+    REGISTER_INI_ENTRIES();
+    */
+    le_h3_index = zend_register_list_destructors_ex(NULL, NULL, "h3_index", module_number);
+    le_h3_boundary = zend_register_list_destructors_ex(NULL, NULL, "h3_boundary", module_number);
+    return SUCCESS;
 }
 /* }}} */
 
@@ -174,10 +174,10 @@ PHP_MINIT_FUNCTION(h3)
  */
 PHP_MSHUTDOWN_FUNCTION(h3)
 {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
-	return SUCCESS;
+    /* uncomment this line if you have INI entries
+    UNREGISTER_INI_ENTRIES();
+    */
+    return SUCCESS;
 }
 /* }}} */
 
@@ -187,9 +187,9 @@ PHP_MSHUTDOWN_FUNCTION(h3)
 PHP_RINIT_FUNCTION(h3)
 {
 #if defined(COMPILE_DL_H3) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE();
+    ZEND_TSRMLS_CACHE_UPDATE();
 #endif
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -198,7 +198,7 @@ PHP_RINIT_FUNCTION(h3)
  */
 PHP_RSHUTDOWN_FUNCTION(h3)
 {
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -206,13 +206,13 @@ PHP_RSHUTDOWN_FUNCTION(h3)
  */
 PHP_MINFO_FUNCTION(h3)
 {
-	php_info_print_table_start();
-	php_info_print_table_header(2, "h3 support", "enabled");
-	php_info_print_table_end();
+    php_info_print_table_start();
+    php_info_print_table_header(2, "h3 support", "enabled");
+    php_info_print_table_end();
 
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
+    /* Remove comments if you have entries in php.ini
+    DISPLAY_INI_ENTRIES();
+    */
 }
 /* }}} */
 
@@ -221,26 +221,26 @@ PHP_MINFO_FUNCTION(h3)
  * Every user visible function must have an entry in h3_functions[].
  */
 const zend_function_entry h3_functions[] = {
-	PHP_FE(degsToRads,	NULL)
-	PHP_FE(h3ToGeoBoundary,	NULL)
-	PHP_FE(h3ToGeo,	NULL)
-	PHP_FE_END	/* Must be the last line in h3_functions[] */
+    PHP_FE(degsToRads,    NULL)
+    PHP_FE(h3ToGeoBoundary,    NULL)
+    PHP_FE(h3ToGeo,    NULL)
+    PHP_FE_END    /* Must be the last line in h3_functions[] */
 };
 /* }}} */
 
 /* {{{ h3_module_entry
  */
 zend_module_entry h3_module_entry = {
-	STANDARD_MODULE_HEADER,
-	"h3",
-	h3_functions,
-	PHP_MINIT(h3),
-	PHP_MSHUTDOWN(h3),
-	PHP_RINIT(h3),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(h3),	/* Replace with NULL if there's nothing to do at request end */
-	PHP_MINFO(h3),
-	PHP_H3_VERSION,
-	STANDARD_MODULE_PROPERTIES
+    STANDARD_MODULE_HEADER,
+    "h3",
+    h3_functions,
+    PHP_MINIT(h3),
+    PHP_MSHUTDOWN(h3),
+    PHP_RINIT(h3),        /* Replace with NULL if there's nothing to do at request start */
+    PHP_RSHUTDOWN(h3),    /* Replace with NULL if there's nothing to do at request end */
+    PHP_MINFO(h3),
+    PHP_H3_VERSION,
+    STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 
