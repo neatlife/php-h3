@@ -50,7 +50,7 @@ PHP_INI_END()
    purposes. */
 
 /* Every user-visible function in PHP should document itself in the source */
-PHP_FUNCTION(degsToRads)
+PHP_FUNCTION(geoToH3)
 {
     zend_long resolution;
     double lat, lon;
@@ -221,7 +221,7 @@ PHP_MINFO_FUNCTION(h3)
  * Every user visible function must have an entry in h3_functions[].
  */
 const zend_function_entry h3_functions[] = {
-    PHP_FE(degsToRads,    NULL)
+    PHP_FE(geoToH3,    NULL)
     PHP_FE(h3ToGeoBoundary,    NULL)
     PHP_FE(h3ToGeo,    NULL)
     PHP_FE_END    /* Must be the last line in h3_functions[] */
