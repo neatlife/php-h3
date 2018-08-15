@@ -4,7 +4,7 @@ PHP binding for Uber's H3 spatial coordinate library write by c extension for ph
 
 ## Build from sources
 
-first install office h3 library
+first install official h3 library
 ```bash
 % git clone https://github.com/uber/h3.git
 % cd h3
