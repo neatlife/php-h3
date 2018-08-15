@@ -91,7 +91,8 @@ PHP_FUNCTION(h3ToGeoBoundary)
     zend_hash_init(Z_ARRVAL(boundary_arr), boundary.numVerts, NULL, ZVAL_PTR_DTOR, 1);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
-    for (int v = 0; v < boundary.numVerts; v++) {
+	int v = 0;
+    for (v = 0; v < boundary.numVerts; v++) {
         zval *lat = NULL, *lon = NULL;
         ZVAL_LONG(lat, boundary.verts[v].lat);
         ZVAL_LONG(lon, boundary.verts[v].lon);

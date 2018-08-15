@@ -18,6 +18,13 @@ dnl Make sure that the comment is aligned:
 [  --enable-h3           Enable h3 support])
 
 if test "$PHP_H3" != "no"; then
+  dnl  EXTRA_FLAGS=" -lh3 -std=c++0x -stdlib=libstdc++"
+  dnl  C_FLAGS=" -lh3 -std=c99"
+  dnl  CXX_FLAGS=" -lh3 -std=c++0x -stdlib=libstdc++"
+  dnl  PHP_REQUIRE_CXX()
+  dnl EXTRA_FLAGS="-std=c++0x -stdlib=libstdc++"
+  dnl  PHP_SUBST(H3_SHARED_LIBADD)
+  dnl  PHP_ADD_LIBRARY(stdc++, 1, H3_SHARED_LIBADD)
   dnl Write more examples of tests here...
 
   dnl # --with-h3 -> check with-path
@@ -58,6 +65,22 @@ if test "$PHP_H3" != "no"; then
   dnl ])
   dnl
   dnl PHP_SUBST(H3_SHARED_LIBADD)
+  EXTRA_CFLAGS="-lh3"
+  PHP_SUBST(EXTRA_CFLAGS)
 
-  PHP_NEW_EXTENSION(h3, h3/src/h3lib/lib/*.c h3.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  LIBNAME=h3
+  LIBSYMBOL=degsToRads
+  PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
+  [
+    PHP_ADD_LIBRARY($LIBNAME)
+  ],[
+    AC_MSG_ERROR([wrong libh3 is required or lib not found])
+  ],[
+    -l$LIBNAME
+  ])
+
+  PHP_SUBST(H3_SHARED_LIBADD)
+
+  LIBS="-lh3 $LIBS"
+  PHP_NEW_EXTENSION(h3, h3.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
