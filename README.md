@@ -97,35 +97,7 @@ extension=h3.so
 
 ## Function
 
-* degsToRads  — Indexes the location at the specified resolution.
-* h3ToGeoBoundary — Finds the centroid of the index.
-* h3ToGeo — Finds the boundary of the index.
-
-### degsToRads
-
-resource $dblink **degsToRads** ( \$lat, \$lon, \$resolution )
-
-```php
-$index = degsToRads($lat, $lon, $resolution);
-var_dump($index);
-```
-Returns 0 on error.
-
-### h3ToGeoBoundary
-
-array  **h3ToGeoBoundary** ( \$index )
-
-```php
-var_dump(h3ToGeoBoundary($index));
-```
-
-### h3ToGeo
-
-array $value **h3ToGeo** ( \$index )
-
-```php
-var_dump(h3ToGeo($index));
-```
+detail function documents please visit official document page: [Documentation](https://uber.github.io/h3/#/documentation/api-reference/indexing)
 
 ## Examples
 
