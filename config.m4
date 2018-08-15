@@ -65,7 +65,7 @@ if test "$PHP_H3" != "no"; then
   dnl ])
   dnl
   dnl PHP_SUBST(H3_SHARED_LIBADD)
-  EXTRA_CFLAGS="-lh3"
+  EXTRA_CFLAGS="-lh3 -std=c99"
   PHP_SUBST(EXTRA_CFLAGS)
 
   LIBNAME=h3

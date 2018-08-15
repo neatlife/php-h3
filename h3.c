@@ -91,8 +91,7 @@ PHP_FUNCTION(h3ToGeoBoundary)
     zend_hash_init(Z_ARRVAL(boundary_arr), boundary.numVerts, NULL, ZVAL_PTR_DTOR, 1);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
-	int v = 0;
-    for (v = 0; v < boundary.numVerts; v++) {
+    for (int v = 0; v < boundary.numVerts; v++) {
         zval *lat = NULL, *lon = NULL;
         ZVAL_LONG(lat, boundary.verts[v].lat);
         ZVAL_LONG(lon, boundary.verts[v].lon);
@@ -140,6 +139,128 @@ PHP_FUNCTION(h3ToGeo)
 
     RETURN_ARR(Z_ARRVAL(lat_lon_arr));
 }
+
+PHP_FUNCTION(h3GetResolution)
+{
+    zval *index_resource_zval = NULL;
+    int resolution;
+    double lat, lon;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+    resolution = h3GetResolution(indexed);
+
+	RETURN_LONG(resolution);
+}
+
+PHP_FUNCTION(h3GetBaseCell)
+{
+    zval *index_resource_zval = NULL;
+    int base_cell;
+    double lat, lon;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+    base_cell = h3GetBaseCell(indexed);
+
+	RETURN_LONG(base_cell);
+}
+
+PHP_FUNCTION(stringToH3)
+{
+    zval *index_resource_zval = NULL;
+	char *str = NULL;
+	size_t str_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &str, &str_len) == FAILURE) {
+		return;
+	}
+
+    H3Index indexed = (H3Index) stringToH3(str);
+
+    zend_resource *index_resource;
+    index_resource = zend_register_resource(&indexed, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
+PHP_FUNCTION(h3ToString)
+{
+    zval *index_resource_zval = NULL;
+	char *str;
+	zend_long sz;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &sz) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+	h3ToString(indexed, str, sz);
+
+	RETURN_STRING(str);
+}
+
+PHP_FUNCTION(h3IsValid)
+{
+    zval *index_resource_zval = NULL;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+	int is_valid = h3IsValid(indexed);
+
+	if (is_valid == 0) {
+		RETURN_FALSE;
+	} else {
+		RETURN_TRUE;
+	}
+}
+
+PHP_FUNCTION(h3IsResClassIII)
+{
+    zval *index_resource_zval = NULL;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+	int is_valid = h3IsResClassIII(indexed);
+
+	if (is_valid == 0) {
+		RETURN_FALSE;
+	} else {
+		RETURN_TRUE;
+	}
+}
+
+PHP_FUNCTION(h3IsPentagon)
+{
+    zval *index_resource_zval = NULL;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+	int is_valid = h3IsPentagon(indexed);
+
+	if (is_valid == 0) {
+		RETURN_FALSE;
+	} else {
+		RETURN_TRUE;
+	}
+}
+
+
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -225,6 +346,14 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(geoToH3,    NULL)
     PHP_FE(h3ToGeoBoundary,    NULL)
     PHP_FE(h3ToGeo,    NULL)
+
+    PHP_FE(h3GetResolution,    NULL)
+    PHP_FE(h3GetBaseCell,    NULL)
+    PHP_FE(h3ToString,    NULL)
+    PHP_FE(h3IsValid,    NULL)
+    PHP_FE(h3IsResClassIII,    NULL)
+    PHP_FE(h3IsPentagon,    NULL)
+
     PHP_FE_END    /* Must be the last line in h3_functions[] */
 };
 /* }}} */

@@ -4,6 +4,17 @@ PHP binding for Uber's H3 spatial coordinate library write by c extension for ph
 
 ## Build from sources
 
+first install office h3 library
+```bash
+% git clone https://github.com/uber/h3.git
+% cd h3
+% cmake3 .
+% make -j4
+% make install
+```
+
+then install h3 php binding:
+
 ``` bash
 % cd php-h3
 % phpize
@@ -14,11 +25,75 @@ PHP binding for Uber's H3 spatial coordinate library write by c extension for ph
 
 ## Configration
 
-h3.ini:
+enable h3.so extension in your php configration:
 
 ```
 extension=h3.so
 ```
+
+## ☑ TODO
+
+### Indexing
+
+- [X] geoToH3
+- [X] h3ToGeoBoundary
+- [X] h3ToGeo
+
+### Inspection
+
+- [X] h3GetResolution
+- [X] h3GetBaseCell
+- [X] h3ToString
+- [X] h3IsValid
+- [X] h3IsResClassIII
+- [X] h3IsPentagon
+
+### Neighbors
+
+- [ ] kRing
+- [ ] maxKringSize
+- [ ] kRingDistances
+- [ ] hexRange
+- [ ] hexRangeDistances
+- [ ] hexRanges
+- [ ] hexRing
+
+### Hierarchy
+
+- [ ] h3ToParent
+- [ ] h3ToChildren
+- [ ] maxH3ToChildrenSize
+- [ ] compact
+- [ ] uncompact
+- [ ] maxUncompactSize
+
+### Regions
+
+- [ ] polyfill
+- [ ] maxPolyfillSize
+- [ ] h3SetToLinkedGeo
+- [ ] destroyLinkedPolygon
+
+### Unidirectional Edges
+
+- [ ] h3IndexesAreNeighbors
+- [ ] getH3UnidirectionalEdge
+- [ ] h3UnidirectionalEdgeIsValid
+- [ ] getOriginH3IndexFromUnidirectionalEdge
+- [ ] getDestinationH3IndexFromUnidirectionalEdge
+- [ ] getH3IndexesFromUnidirectionalEdge
+- [ ] getH3UnidirectionalEdgesFromHexagon
+- [ ] getH3UnidirectionalEdgeBoundary
+
+### Miscellaneous
+
+- [ ] degsToRads
+- [ ] radsToDegs
+- [ ] hexAreaKm2
+- [ ] hexAreaM2
+- [ ] edgeLengthKm
+- [ ] edgeLengthM
+- [ ] numHexagons
 
 ## Function
 
@@ -55,22 +130,21 @@ var_dump(h3ToGeo($index));
 ## Examples
 
 ```php
-// degsToRads
-$index = degsToRads($lat, $lon, $resolution);
+$index = geoToH3(40.689167, -74.044444, 10);
 
 var_dump($index);
-```
 
-```php
-// h3ToGeoBoundary
-$index = degsToRads($lat, $lon, $resolution);
+var_dump(h3GetResolution($index));
 
-var_dump(h3ToGeoBoundary($index));
-```
+var_dump(h3GetBaseCell($index));
 
-```php
-// h3ToGeoBoundary
-$index = degsToRads($lat, $lon, $resolution);
+var_dump(h3ToString($index, 0));
 
-var_dump(h3ToGeo($index));
+var_dump($index);
+
+var_dump(h3IsValid($index));
+
+var_dump(h3IsResClassIII($index));
+
+var_dump(h3IsPentagon($index));
 ```
