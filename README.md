@@ -50,8 +50,8 @@ extension=h3.so
 
 ### Neighbors
 
-- [ ] kRing
-- [ ] maxKringSize
+- [X] kRing
+- [X] maxKringSize
 - [ ] kRingDistances
 - [ ] hexRange
 - [ ] hexRangeDistances
@@ -119,4 +119,8 @@ var_dump(h3IsValid($index));
 var_dump(h3IsResClassIII($index));
 
 var_dump(h3IsPentagon($index));
+
+var_dump(kRing($index, 100));
+
+var_dump(maxKringSize(100));
 ```

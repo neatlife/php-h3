@@ -17,3 +17,7 @@ var_dump(h3IsValid($index));
 var_dump(h3IsResClassIII($index));
 
 var_dump(h3IsPentagon($index));
+
+var_dump(kRing($index, 100));
+
+var_dump(maxKringSize(100));

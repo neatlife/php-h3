@@ -260,6 +260,39 @@ PHP_FUNCTION(h3IsPentagon)
 	}
 }
 
+PHP_FUNCTION(kRing)
+{
+    zval *index_resource_zval = NULL;
+	zend_long k;
+	H3Index indexed = NULL;
+	H3Index *out;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &k) == FAILURE) {
+        return;
+    }
+
+    indexed = (H3Index) Z_RES_VAL_P(index_resource_zval);
+	kRing(indexed, k, out);
+
+    zend_resource *out_resource;
+    out_resource = zend_register_resource(&out, le_h3_index);
+
+    RETURN_RES(out_resource);
+}
+
+PHP_FUNCTION(maxKringSize)
+{
+	zend_long k;
+	zend_long size;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &k) == FAILURE) {
+        return;
+    }
+
+	size = maxKringSize(k);
+
+	RETURN_LONG(size);
+}
 
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
@@ -353,6 +386,9 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(h3IsValid,    NULL)
     PHP_FE(h3IsResClassIII,    NULL)
     PHP_FE(h3IsPentagon,    NULL)
+
+    PHP_FE(kRing,    NULL)
+    PHP_FE(maxKringSize,    NULL)
 
     PHP_FE_END    /* Must be the last line in h3_functions[] */
 };
