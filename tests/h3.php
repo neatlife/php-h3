@@ -18,6 +18,10 @@ var_dump(h3IsResClassIII($index));
 
 var_dump(h3IsPentagon($index));
 
-var_dump(kRing($index, 100));
+var_dump(kRing($index, 5));
 
-var_dump(maxKringSize(100));
+var_dump(maxKringSize(5));
+
+var_dump(kRingDistances($index, 5));
+
+echo "hello world\n";
