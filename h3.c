@@ -318,7 +318,7 @@ PHP_FUNCTION(kRingDistances)
         zval out_zval;
         zval distance_zval;
 
-        ZVAL_LONG(&distance_zval, &distances[i]);
+        ZVAL_LONG(&distance_zval, distances[i]);
         ZVAL_RES(&out_zval, out_resource);
 
         zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
@@ -334,23 +334,6 @@ PHP_FUNCTION(kRingDistances)
 
     char *hello = "hello";
     RETURN_STRING(hello)
-}
-
-PHP_FUNCTION(h3Distance)
-{
-    zval *origin_resource_zval;
-    zval *h3_resource_zval;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rr", &origin_resource_zval, &h3_resource_zval) == FAILURE) {
-        return;
-    }
-
-    H3Index *origin = (H3Index *) Z_RES_VAL_P(origin_resource_zval);
-    H3Index *h3 = (H3Index *) Z_RES_VAL_P(h3_resource_zval);
-
-    int distance = h3Distance(*origin, *h3);
-
-    RETURN_LONG(distance);
 }
 
 /* The previous line is meant for vim and emacs, so it can correctly fold and
