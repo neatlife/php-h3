@@ -310,10 +310,8 @@ PHP_FUNCTION(kRingDistances)
 	kRingDistances(*indexed, k, outs, distances);
 
 	zval out_zvals, distance_zvals;
-	ZVAL_NEW_PERSISTENT_ARR(&out_zvals);
-	zend_hash_init(Z_ARRVAL(out_zvals), arr_count, NULL, ZVAL_PTR_DTOR, 0);
-	ZVAL_NEW_PERSISTENT_ARR(&distance_zvals);
-	zend_hash_init(Z_ARRVAL(distance_zvals), arr_count, NULL, ZVAL_PTR_DTOR, 0);
+	array_init(&out_zvals);
+	array_init(&distance_zvals);
 
 	for (int i = 0; i < arr_count; i++) {
 		zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
@@ -323,18 +321,16 @@ PHP_FUNCTION(kRingDistances)
 		ZVAL_LONG(&distance_zval, &distances[i]);
 		ZVAL_RES(&out_zval, out_resource);
 
-	//	zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+		zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
 		zend_hash_index_add(Z_ARRVAL(distance_zvals), i, &distance_zval);
 	}
 
-//	zval outs_and_distances;
-//	ZVAL_NEW_PERSISTENT_ARR(&outs_and_distances);
+	zval outs_and_distances;
+	array_init(&outs_and_distances);
+	zend_hash_index_add(Z_ARRVAL(outs_and_distances), 0, &out_zvals);
+	zend_hash_index_add(Z_ARRVAL(outs_and_distances), 1, &distance_zvals);
 
-//	zend_hash_init(Z_ARRVAL(outs_and_distances), 2, NULL, ZVAL_PTR_DTOR, 1);
-//	zend_hash_index_add(Z_ARRVAL(outs_and_distances), 0, &out_zvals);
-//	zend_hash_index_add(Z_ARRVAL(outs_and_distances), 1, &distance_zvals);
-
-//	RETURN_ARR(Z_ARRVAL(outs_and_distances));
+	RETURN_ARR(Z_ARRVAL(outs_and_distances));
 
 	char *hello = "hello";
 	RETURN_STRING(hello)

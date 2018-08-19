@@ -51,8 +51,8 @@ extension=h3.so
 ### Neighbors
 
 - [X] kRing
-- [ ] maxKringSize
-- [ ] kRingDistances
+- [X] maxKringSize
+- [X] kRingDistances
 - [ ] hexRange
 - [ ] hexRangeDistances
 - [ ] hexRanges
