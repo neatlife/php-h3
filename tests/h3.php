@@ -4,6 +4,10 @@ $index = geoToH3(40.689167, -74.044444, 10);
 
 var_dump($index);
 
+var_dump(h3ToGeo($index));
+
+var_dump(h3ToGeoBoundary($index));
+
 var_dump(h3GetResolution($index));
 
 var_dump(h3GetBaseCell($index));

@@ -89,8 +89,7 @@ PHP_FUNCTION(h3ToGeoBoundary)
     h3ToGeoBoundary(*indexed, &boundary);
 
     zval boundary_arr;
-    ZVAL_NEW_PERSISTENT_ARR(&boundary_arr);
-    zend_hash_init(Z_ARRVAL(boundary_arr), boundary.numVerts, NULL, ZVAL_PTR_DTOR, 1);
+	array_init(&boundary_arr);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
@@ -99,10 +98,9 @@ PHP_FUNCTION(h3ToGeoBoundary)
         ZVAL_LONG(&lon, boundary.verts[v].lon);
 
         zval lat_lon_arr;
-        ZVAL_NEW_PERSISTENT_ARR(&lat_lon_arr);
-        zend_hash_init(Z_ARRVAL(lat_lon_arr), 2, NULL, ZVAL_PTR_DTOR, 1);
-        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), v, &lat);
-        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), v, &lon);
+		array_init(&lat_lon_arr);
+        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, &lat);
+        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, &lon);
 
         zend_hash_index_add(Z_ARRVAL(boundary_arr), v, &lat_lon_arr);
     }
@@ -134,8 +132,7 @@ PHP_FUNCTION(h3ToGeo)
     ZVAL_DOUBLE(&lon_zval, radsToDegs(center.lon));
 
     zval lat_lon_arr;
-    ZVAL_NEW_PERSISTENT_ARR(&lat_lon_arr);
-    zend_hash_init(Z_ARRVAL(lat_lon_arr), 2, NULL, ZVAL_PTR_DTOR, 1);
+	array_init(&lat_lon_arr);
     zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, &lat_zval);
     zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, &lon_zval);
 
