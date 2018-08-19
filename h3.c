@@ -68,7 +68,7 @@ PHP_FUNCTION(geoToH3)
 
     current_indexed = geoToH3(&location, resolution);
 
-  php_printf("geoToH3 indexed: %d\n", current_indexed);
+    php_printf("geoToH3 indexed: %d\n", current_indexed);
 
     zend_resource *index_resource = zend_register_resource(&current_indexed, le_h3_index);
 
@@ -151,10 +151,10 @@ PHP_FUNCTION(h3GetResolution)
     }
     H3Index *indexed = Z_RES_VAL_P(index_resource_zval);
 
-  php_printf("h3GetResolution indexed: %d\n", *indexed);
+    php_printf("h3GetResolution indexed: %d\n", *indexed);
     int resolution = h3GetResolution(*indexed);
 
-  RETURN_LONG(resolution);
+    RETURN_LONG(resolution);
 }
 
 PHP_FUNCTION(h3GetBaseCell)
@@ -168,18 +168,18 @@ PHP_FUNCTION(h3GetBaseCell)
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
     int base_cell = base_cell = h3GetBaseCell(*indexed);
 
-  RETURN_LONG(base_cell);
+    RETURN_LONG(base_cell);
 }
 
 PHP_FUNCTION(stringToH3)
 {
     zval *index_resource_zval;
-  char *str;
-  size_t str_len;
+    char *str;
+    size_t str_len;
 
-  if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &str, &str_len) == FAILURE) {
-    return;
-  }
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &str, &str_len) == FAILURE) {
+        return;
+    }
 
     H3Index indexed = (H3Index) stringToH3(str);
 
@@ -192,17 +192,17 @@ PHP_FUNCTION(stringToH3)
 PHP_FUNCTION(h3ToString)
 {
     zval *index_resource_zval;
-  char *str;
-  size_t str_len;
+    char *str;
+    size_t str_len;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "rs", &index_resource_zval, &str, &str_len) == FAILURE) {
         return;
     }
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 
-  h3ToString(*indexed, str, str_len);
+    h3ToString(*indexed, str, str_len);
 
-  RETURN_STRING(str);
+    RETURN_STRING(str);
 }
 
 PHP_FUNCTION(h3IsValid)
@@ -215,11 +215,11 @@ PHP_FUNCTION(h3IsValid)
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 
-  if (h3IsValid(*indexed) == 0) {
-    RETURN_FALSE;
-  } else {
-    RETURN_TRUE;
-  }
+    if (h3IsValid(*indexed) == 0) {
+        RETURN_FALSE;
+    } else {
+        RETURN_TRUE;
+    }
 }
 
 PHP_FUNCTION(h3IsResClassIII)
@@ -231,13 +231,13 @@ PHP_FUNCTION(h3IsResClassIII)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-  php_printf("h3IsResClassIII indexed: %d\n", *indexed);
+    php_printf("h3IsResClassIII indexed: %d\n", *indexed);
 
-  if (h3IsResClassIII(*indexed) == 0) {
-    RETURN_FALSE;
-  } else {
-    RETURN_TRUE;
-  }
+    if (h3IsResClassIII(*indexed) == 0) {
+        RETURN_FALSE;
+    } else {
+        RETURN_TRUE;
+    }
 }
 
 PHP_FUNCTION(h3IsPentagon)
@@ -249,30 +249,30 @@ PHP_FUNCTION(h3IsPentagon)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-  php_printf("h3IsPentagon indexed: %d\n", *indexed);
-  int is_valid = h3IsPentagon(*indexed);
+    php_printf("h3IsPentagon indexed: %d\n", *indexed);
+    int is_valid = h3IsPentagon(*indexed);
 
-  if (is_valid == 0) {
-    RETURN_FALSE;
-  } else {
-    RETURN_TRUE;
-  }
+    if (is_valid == 0) {
+        RETURN_FALSE;
+    } else {
+        RETURN_TRUE;
+    }
 }
 
 PHP_FUNCTION(kRing)
 {
     zval *index_resource_zval;
-  zend_long k;
+    zend_long k;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &k) == FAILURE) {
         return;
     }
 
-  int arr_count = maxKringSize(k);
-  H3Index out[arr_count];
+    int arr_count = maxKringSize(k);
+    H3Index out[arr_count];
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 
-  kRing(*indexed, k, out);
+    kRing(*indexed, k, out);
 
     zend_resource *out_resource = zend_register_resource(&out, le_h3_index);
 
@@ -281,59 +281,59 @@ PHP_FUNCTION(kRing)
 
 PHP_FUNCTION(maxKringSize)
 {
-  zend_long k;
-  zend_long size;
+    zend_long k;
+    zend_long size;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &k) == FAILURE) {
         return;
     }
 
-  size = maxKringSize(k);
+    size = maxKringSize(k);
 
-  RETURN_LONG(size);
+    RETURN_LONG(size);
 }
 
 PHP_FUNCTION(kRingDistances)
 {
-  zend_long k;
+    zend_long k;
     zval *index_resource_zval;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &k) == FAILURE) {
         return;
     }
 
-  H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-  int arr_count = maxKringSize(k);
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    int arr_count = maxKringSize(k);
 
-  H3Index outs[arr_count];
-  int distances[arr_count];
-  kRingDistances(*indexed, k, outs, distances);
+    H3Index outs[arr_count];
+    int distances[arr_count];
+    kRingDistances(*indexed, k, outs, distances);
 
-  zval out_zvals, distance_zvals;
-  array_init(&out_zvals);
-  array_init(&distance_zvals);
+    zval out_zvals, distance_zvals;
+    array_init(&out_zvals);
+    array_init(&distance_zvals);
 
-  for (int i = 0; i < arr_count; i++) {
-    zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
-    zval out_zval;
-    zval distance_zval;
+    for (int i = 0; i < arr_count; i++) {
+        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zval out_zval;
+        zval distance_zval;
 
-    ZVAL_LONG(&distance_zval, &distances[i]);
-    ZVAL_RES(&out_zval, out_resource);
+        ZVAL_LONG(&distance_zval, &distances[i]);
+        ZVAL_RES(&out_zval, out_resource);
 
-    zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
-    zend_hash_index_add(Z_ARRVAL(distance_zvals), i, &distance_zval);
-  }
+        zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+        zend_hash_index_add(Z_ARRVAL(distance_zvals), i, &distance_zval);
+    }
 
-  zval outs_and_distances;
-  array_init(&outs_and_distances);
-  zend_hash_index_add(Z_ARRVAL(outs_and_distances), 0, &out_zvals);
-  zend_hash_index_add(Z_ARRVAL(outs_and_distances), 1, &distance_zvals);
+    zval outs_and_distances;
+    array_init(&outs_and_distances);
+    zend_hash_index_add(Z_ARRVAL(outs_and_distances), 0, &out_zvals);
+    zend_hash_index_add(Z_ARRVAL(outs_and_distances), 1, &distance_zvals);
 
-  RETURN_ARR(Z_ARRVAL(outs_and_distances));
+    RETURN_ARR(Z_ARRVAL(outs_and_distances));
 
-  char *hello = "hello";
-  RETURN_STRING(hello)
+    char *hello = "hello";
+    RETURN_STRING(hello)
 }
 
 PHP_FUNCTION(h3Distance)
@@ -348,7 +348,7 @@ PHP_FUNCTION(h3Distance)
     H3Index *origin = (H3Index *) Z_RES_VAL_P(origin_resource_zval);
     H3Index *h3 = (H3Index *) Z_RES_VAL_P(h3_resource_zval);
 
-  int distance = h3Distance(*origin, *h3);
+    int distance = h3Distance(*origin, *h3);
 
     RETURN_LONG(distance);
 }
