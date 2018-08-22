@@ -328,9 +328,6 @@ PHP_FUNCTION(kRingDistances)
     zend_hash_index_add(Z_ARRVAL(outs_and_distances), 1, &distance_zvals);
 
     RETURN_ARR(Z_ARRVAL(outs_and_distances));
-
-    char *hello = "hello";
-    RETURN_STRING(hello)
 }
 
 PHP_FUNCTION(hexRange)
@@ -361,6 +358,46 @@ PHP_FUNCTION(hexRange)
     }
 
     RETURN_ARR(Z_ARRVAL(out_zvals));
+}
+
+PHP_FUNCTION(hexRangeDistances)
+{
+    zend_long k;
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &k) == FAILURE) {
+        return;
+    }
+
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    int arr_count = maxKringSize(k);
+
+    H3Index outs[arr_count];
+    int distances[arr_count];
+    hexRangeDistances(*indexed, k, outs, distances);
+
+    zval out_zvals, distance_zvals;
+    array_init(&out_zvals);
+    array_init(&distance_zvals);
+
+    for (int i = 0; i < arr_count; i++) {
+        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zval out_zval;
+        zval distance_zval;
+
+        ZVAL_LONG(&distance_zval, distances[i]);
+        ZVAL_RES(&out_zval, out_resource);
+
+        zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+        zend_hash_index_add(Z_ARRVAL(distance_zvals), i, &distance_zval);
+    }
+
+    zval outs_and_distances;
+    array_init(&outs_and_distances);
+    zend_hash_index_add(Z_ARRVAL(outs_and_distances), 0, &out_zvals);
+    zend_hash_index_add(Z_ARRVAL(outs_and_distances), 1, &distance_zvals);
+
+    RETURN_ARR(Z_ARRVAL(outs_and_distances));
 }
 
 /* The previous line is meant for vim and emacs, so it can correctly fold and
@@ -460,6 +497,7 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(maxKringSize,    NULL)
     PHP_FE(kRingDistances,    NULL)
     PHP_FE(hexRange,    NULL)
+    PHP_FE(hexRangeDistances,    NULL)
 
     PHP_FE(h3Distance,    NULL)
 
