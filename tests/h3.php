@@ -30,6 +30,8 @@ var_dump(hexRange($index, 5));
 
 var_dump(hexRangeDistances($index, 5));
 
+var_dump(hexRanges([$index], 5));
+
 $index1 = geoToH3(341.689167, -173.044444, 10);
 var_dump(h3Distance($index, $index1));
 
