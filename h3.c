@@ -89,7 +89,7 @@ PHP_FUNCTION(h3ToGeoBoundary)
     h3ToGeoBoundary(*indexed, &boundary);
 
     zval boundary_arr;
-	array_init(&boundary_arr);
+    array_init(&boundary_arr);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
@@ -98,7 +98,7 @@ PHP_FUNCTION(h3ToGeoBoundary)
         ZVAL_LONG(&lon, boundary.verts[v].lon);
 
         zval lat_lon_arr;
-		array_init(&lat_lon_arr);
+        array_init(&lat_lon_arr);
         zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, &lat);
         zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, &lon);
 
@@ -132,7 +132,7 @@ PHP_FUNCTION(h3ToGeo)
     ZVAL_DOUBLE(&lon_zval, radsToDegs(center.lon));
 
     zval lat_lon_arr;
-	array_init(&lat_lon_arr);
+    array_init(&lat_lon_arr);
     zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, &lat_zval);
     zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, &lon_zval);
 
@@ -343,7 +343,9 @@ PHP_FUNCTION(hexRange)
     int arr_count = maxKringSize(k);
 
     H3Index outs[arr_count];
-    hexRange(*indexed, k, outs);
+    if (hexRange(*indexed, k, outs) != 0) {
+        RETURN_FALSE;
+    }
 
     zval out_zvals;
     array_init(&out_zvals);
@@ -374,7 +376,9 @@ PHP_FUNCTION(hexRangeDistances)
 
     H3Index outs[arr_count];
     int distances[arr_count];
-    hexRangeDistances(*indexed, k, outs, distances);
+    if (hexRangeDistances(*indexed, k, outs, distances) != 0) {
+        RETURN_FALSE;
+    }
 
     zval out_zvals, distance_zvals;
     array_init(&out_zvals);
@@ -409,18 +413,20 @@ PHP_FUNCTION(hexRanges)
         return;
     }
 
-	int length = zend_hash_num_elements(Z_ARRVAL_P(h3Set_zval));
+    int length = zend_hash_num_elements(Z_ARRVAL_P(h3Set_zval));
     H3Index *indexed[length];
-	zval *h3Indexed_zval;
-	int i;
-	ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(h3Set_zval), i, h3Indexed_zval) {
-		indexed[i] = Z_RES_VAL_P(h3Indexed_zval);
-	} ZEND_HASH_FOREACH_END();
+    zval *h3Indexed_zval;
+    int i;
+    ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(h3Set_zval), i, h3Indexed_zval) {
+        indexed[i] = Z_RES_VAL_P(h3Indexed_zval);
+    } ZEND_HASH_FOREACH_END();
 
     int arr_count = maxKringSize(k) * length;
 
     H3Index outs[arr_count];
-    hexRanges(indexed, length, k, outs);
+    if (hexRanges(indexed, length, k, outs) != 0) {
+        RETURN_FALSE;
+    }
 
     zval out_zvals;
     array_init(&out_zvals);
