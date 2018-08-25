@@ -1,6 +1,6 @@
 # h3 Extension for PHP
 
-PHP binding for Uber's H3 spatial coordinate library write by c extension for php.
+PHP binding for Uber's H3 spatial coordinate library write by c extension for php7.
 
 ## Build from sources
 
