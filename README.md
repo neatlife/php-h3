@@ -1,19 +1,30 @@
 # h3 Extension for PHP
 
+[![Build Status](https://travis-ci.org/neatlife/php-h3.svg?branch=master)](https://travis-ci.org/neatlife/php-h3)
+
 PHP binding for Uber's H3 spatial coordinate library write by c extension for php7.
 
 ## Build from sources
 
 first install official h3 library
+
 ```bash
 % git clone https://github.com/uber/h3.git
 % cd h3
-% cmake3 .
+% cmake3 -DBUILD_SHARED_LIBS=ON .
 % make -j4
 % make install
 ```
 
-then install h3 php binding:
+before compile php h3 extension, you may need run this:
+
+```bash
+sudo cp /usr/local/lib/libh3.* /usr/local/lib64/
+sudo cp /usr/local/lib/libh3.* /usr/lib/
+sudo cp /usr/local/lib/libh3.* /usr/lib64/
+```
+
+then compile and install h3 php binding:
 
 ``` bash
 % cd php-h3

@@ -1,0 +1,43 @@
+sudo: required
+language: php
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+env: CC=gcc
+matrix:
+  allow_failures:
+    - php: nightly
+  include:
+    - php: 7.0
+      env: CC=clang
+    - php: 7.1
+      env: CC=clang
+    - php: 7.2
+      env: CC=clang
+addons:
+  apt:
+    packages:
+      - clang
+before_install:
+  - git clone https://github.com/uber/h3.git
+  - cd h3
+  - cmake -DBUILD_SHARED_LIBS=ON .
+  - make -j4
+  - sudo make install
+  - sudo cp /usr/local/lib/libh3.* /usr/lib/
+  - sudo mkdir /usr/local/lib64/ /usr/lib64/
+  - sudo cp /usr/local/lib/libh3.* /usr/local/lib64/
+  - sudo cp /usr/local/lib/libh3.* /usr/lib64/
+  - sudo sh -c "echo '/usr/local/lib64/' >> /etc/ld.so.conf"
+  - sudo sh -c "echo '/usr/lib64/' >> /etc/ld.so.conf"
+  - sudo ldconfig
+  - cd ..
+  - phpize
+  - ./configure
+install: make install
+before_script:
+  - echo 'extension = h3.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+script:
+  - php tests/h3.php
