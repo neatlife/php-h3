@@ -443,6 +443,38 @@ PHP_FUNCTION(hexRanges)
     RETURN_ARR(Z_ARRVAL(out_zvals));
 }
 
+PHP_FUNCTION(hexRing)
+{
+    zend_long k;
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &k) == FAILURE) {
+        return;
+    }
+
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    int arr_count = maxKringSize(k);
+
+    H3Index outs[arr_count];
+    if (hexRing(*indexed, k, outs) != 0) {
+        RETURN_FALSE;
+    }
+
+    zval out_zvals;
+    array_init(&out_zvals);
+
+    for (int i = 0; i < arr_count; i++) {
+        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zval out_zval;
+
+        ZVAL_RES(&out_zval, out_resource);
+
+        zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(out_zvals));
+}
+
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -542,6 +574,7 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(hexRange,    NULL)
     PHP_FE(hexRangeDistances,    NULL)
     PHP_FE(hexRanges,    NULL)
+    PHP_FE(hexRing,    NULL)
 
     PHP_FE(h3Distance,    NULL)
 
