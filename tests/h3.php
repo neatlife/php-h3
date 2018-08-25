@@ -38,4 +38,6 @@ var_dump(hexRing($index, 5));
 
 var_dump(h3Distance($index, $index1));
 
+var_dump(h3ToParent($index, 5));
+
 echo "hello world\n";

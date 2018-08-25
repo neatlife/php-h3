@@ -475,6 +475,23 @@ PHP_FUNCTION(hexRing)
     RETURN_ARR(Z_ARRVAL(out_zvals));
 }
 
+PHP_FUNCTION(h3ToParent)
+{
+    zend_long parentRes;
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &parentRes) == FAILURE) {
+        return;
+    }
+
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+	H3Index h3Parent = h3ToParent(*indexed, parentRes);
+
+    zend_resource *index_resource = zend_register_resource(&h3Parent, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -575,6 +592,8 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(hexRangeDistances,    NULL)
     PHP_FE(hexRanges,    NULL)
     PHP_FE(hexRing,    NULL)
+
+    PHP_FE(h3ToParent,    NULL)
 
     PHP_FE(h3Distance,    NULL)
 
