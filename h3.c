@@ -521,6 +521,21 @@ PHP_FUNCTION(h3ToChildren)
     RETURN_ARR(Z_ARRVAL(h3Children_zvals));
 }
 
+PHP_FUNCTION(maxH3ToChildrenSize)
+{
+    zend_long childrenRes;
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &childrenRes) == FAILURE) {
+        return;
+    }
+
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    int childrenSize = maxH3ToChildrenSize(*indexed, childrenRes);
+
+    RETURN_LONG(childrenSize);
+}
+
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -624,6 +639,7 @@ const zend_function_entry h3_functions[] = {
 
     PHP_FE(h3ToParent,    NULL)
     PHP_FE(h3ToChildren,    NULL)
+    PHP_FE(maxH3ToChildrenSize,    NULL)
 
     PHP_FE(h3Distance,    NULL)
 

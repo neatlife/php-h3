@@ -77,7 +77,7 @@ extension=h3.so
 
 - [X] h3ToParent
 - [X] h3ToChildren
-- [ ] maxH3ToChildrenSize
+- [X] maxH3ToChildrenSize
 - [ ] compact
 - [ ] uncompact
 - [ ] maxUncompactSize
@@ -157,5 +157,7 @@ var_dump(h3Distance($index, $index1));
 
 var_dump(h3ToParent($index, 5));
 
-var_dump(h3ToChildren($index, 5));
+var_dump(h3ToChildren($index, 2));
+
+var_dump(maxH3ToChildrenSize($index, 2));
 ```
