@@ -58,4 +58,11 @@ var_dump(edgeLengthM(10));
 
 var_dump(numHexagons(2));
 
+
+var_dump(h3IndexesAreNeighbors($index, $index1));
+var_dump(getH3UnidirectionalEdge($index, $index1));
+var_dump(h3UnidirectionalEdgeIsValid($index));
+var_dump(getOriginH3IndexFromUnidirectionalEdge($index));
+var_dump(getDestinationH3IndexFromUnidirectionalEdge($index));
+
 echo "hello world\n";

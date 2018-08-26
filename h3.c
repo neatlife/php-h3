@@ -532,6 +532,98 @@ PHP_FUNCTION(maxH3ToChildrenSize)
     RETURN_LONG(childrenSize);
 }
 
+PHP_FUNCTION(h3IndexesAreNeighbors)
+{
+    zval *origin_index_resource_zval;
+    zval *destination_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rr", &origin_index_resource_zval, &destination_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *origin = (H3Index *) Z_RES_VAL_P(origin_index_resource_zval);
+    H3Index *destination = (H3Index *) Z_RES_VAL_P(destination_index_resource_zval);
+
+    if (h3IndexesAreNeighbors(*origin, *destination) == 1) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+PHP_FUNCTION(getH3UnidirectionalEdge)
+{
+    zval *origin_index_resource_zval;
+    zval *destination_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rr", &origin_index_resource_zval, &destination_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *origin = (H3Index *) Z_RES_VAL_P(origin_index_resource_zval);
+    H3Index *destination = (H3Index *) Z_RES_VAL_P(destination_index_resource_zval);
+
+    H3Index index = h3IndexesAreNeighbors(*origin, *destination);
+    if (index == 0) {
+        RETURN_FALSE;
+    }
+
+    zend_resource *index_resource = zend_register_resource(&index, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
+PHP_FUNCTION(h3UnidirectionalEdgeIsValid)
+{
+    zval *edge_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &edge_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *edge = (H3Index *) Z_RES_VAL_P(edge_index_resource_zval);
+
+    if (h3UnidirectionalEdgeIsValid(*edge) == 1) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+PHP_FUNCTION(getOriginH3IndexFromUnidirectionalEdge)
+{
+    zval *edge_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &edge_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *edge = (H3Index *) Z_RES_VAL_P(edge_index_resource_zval);
+
+    H3Index index = getOriginH3IndexFromUnidirectionalEdge(*edge);
+
+    zend_resource *index_resource = zend_register_resource(&index, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
+PHP_FUNCTION(getDestinationH3IndexFromUnidirectionalEdge)
+{
+    zval *edge_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &edge_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *edge = (H3Index *) Z_RES_VAL_P(edge_index_resource_zval);
+
+    H3Index index = getDestinationH3IndexFromUnidirectionalEdge(*edge);
+
+    zend_resource *index_resource = zend_register_resource(&index, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
 PHP_FUNCTION(degsToRads)
 {
     double lat_lon;
@@ -705,10 +797,12 @@ PHP_MINFO_FUNCTION(h3)
  * Every user visible function must have an entry in h3_functions[].
  */
 const zend_function_entry h3_functions[] = {
+    // Indexing functions
     PHP_FE(geoToH3,    NULL)
     PHP_FE(h3ToGeoBoundary,    NULL)
     PHP_FE(h3ToGeo,    NULL)
 
+    // Index inspection functions
     PHP_FE(h3GetResolution,    NULL)
     PHP_FE(h3GetBaseCell,    NULL)
     PHP_FE(h3ToString,    NULL)
@@ -716,6 +810,7 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(h3IsResClassIII,    NULL)
     PHP_FE(h3IsPentagon,    NULL)
 
+    // Neighbor traversal functions
     PHP_FE(kRing,    NULL)
     PHP_FE(maxKringSize,    NULL)
     PHP_FE(kRingDistances,    NULL)
@@ -724,11 +819,22 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(hexRanges,    NULL)
     PHP_FE(hexRing,    NULL)
 
+    // Hierarchical grid functions
     PHP_FE(h3ToParent,    NULL)
     PHP_FE(h3ToChildren,    NULL)
     PHP_FE(maxH3ToChildrenSize,    NULL)
 
+    // Distance functions
     PHP_FE(h3Distance,    NULL)
+
+    // Region functions
+
+    // Unidirectional edge functions
+    PHP_FE(h3IndexesAreNeighbors,    NULL)
+    PHP_FE(getH3UnidirectionalEdge,    NULL)
+    PHP_FE(h3UnidirectionalEdgeIsValid,    NULL)
+    PHP_FE(getOriginH3IndexFromUnidirectionalEdge,    NULL)
+    PHP_FE(getDestinationH3IndexFromUnidirectionalEdge,    NULL)
 
     // Miscellaneous H3 functions
     PHP_FE(degsToRads,    NULL)

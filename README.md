@@ -91,11 +91,11 @@ extension=h3.so
 
 ### Unidirectional Edges
 
-- [ ] h3IndexesAreNeighbors
-- [ ] getH3UnidirectionalEdge
-- [ ] h3UnidirectionalEdgeIsValid
-- [ ] getOriginH3IndexFromUnidirectionalEdge
-- [ ] getDestinationH3IndexFromUnidirectionalEdge
+- [X] h3IndexesAreNeighbors
+- [X] getH3UnidirectionalEdge
+- [X] h3UnidirectionalEdgeIsValid
+- [X] getOriginH3IndexFromUnidirectionalEdge
+- [X] getDestinationH3IndexFromUnidirectionalEdge
 - [ ] getH3IndexesFromUnidirectionalEdge
 - [ ] getH3UnidirectionalEdgesFromHexagon
 - [ ] getH3UnidirectionalEdgeBoundary
@@ -174,4 +174,11 @@ var_dump(edgeLengthKm(10));
 var_dump(edgeLengthM(10));
 
 var_dump(numHexagons(2));
+
+
+var_dump(h3IndexesAreNeighbors($index, $index1));
+var_dump(getH3UnidirectionalEdge($index, $index1));
+var_dump(h3UnidirectionalEdgeIsValid($index));
+var_dump(getOriginH3IndexFromUnidirectionalEdge($index));
+var_dump(getDestinationH3IndexFromUnidirectionalEdge($index));
 ```
