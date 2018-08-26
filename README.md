@@ -4,6 +4,11 @@
 
 PHP binding for Uber's H3 spatial coordinate library write by c extension for php7.
 
+For more information on H3 and for the full API documentation, please see the [H3 Documentation](https://uber.github.io/h3/).
+
+-   Post **bug reports or feature requests** to the [Github Issues page](https://github.com/neatlife/php-h3/issues)
+-   Ask **questions** by posting to the [H3 tag on StackOverflow](https://stackoverflow.com/questions/tagged/h3)
+
 ## Build from sources
 
 first install official h3 library
@@ -22,6 +27,9 @@ before compile php h3 extension, you may need run this:
 sudo cp /usr/local/lib/libh3.* /usr/local/lib64/
 sudo cp /usr/local/lib/libh3.* /usr/lib/
 sudo cp /usr/local/lib/libh3.* /usr/lib64/
+sudo echo '/usr/local/lib64/' >> /etc/ld.so.conf
+sudo echo '/usr/lib64/' >> /etc/ld.so.conf
+sudo ldconfig
 ```
 
 then compile and install h3 php binding:
@@ -109,10 +117,6 @@ extension=h3.so
 - [X] edgeLengthKm
 - [X] edgeLengthM
 - [X] numHexagons
-
-## Function
-
-detail function documents please visit official document page: [Documentation](https://uber.github.io/h3/#/documentation/api-reference/indexing)
 
 ## Examples
 
