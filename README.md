@@ -76,7 +76,7 @@ extension=h3.so
 ### Hierarchy
 
 - [X] h3ToParent
-- [ ] h3ToChildren
+- [X] h3ToChildren
 - [ ] maxH3ToChildrenSize
 - [ ] compact
 - [ ] uncompact
@@ -156,4 +156,6 @@ var_dump(hexRing($index, 5));
 var_dump(h3Distance($index, $index1));
 
 var_dump(h3ToParent($index, 5));
+
+var_dump(h3ToChildren($index, 5));
 ```

@@ -485,9 +485,27 @@ PHP_FUNCTION(h3ToParent)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-	H3Index h3Parent = h3ToParent(*indexed, parentRes);
+    H3Index h3Parent = h3ToParent(*indexed, parentRes);
 
     zend_resource *index_resource = zend_register_resource(&h3Parent, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
+PHP_FUNCTION(h3ToChildren)
+{
+    zend_long childrenRes;
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &index_resource_zval, &childrenRes) == FAILURE) {
+        return;
+    }
+
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    H3Index h3Children;
+    h3ToChildren(*indexed, childrenRes, &h3Children);
+
+    zend_resource *index_resource = zend_register_resource(&h3Children, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -594,6 +612,7 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(hexRing,    NULL)
 
     PHP_FE(h3ToParent,    NULL)
+    PHP_FE(h3ToChildren,    NULL)
 
     PHP_FE(h3Distance,    NULL)
 
