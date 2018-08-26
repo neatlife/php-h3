@@ -112,7 +112,6 @@ PHP_FUNCTION(h3ToGeo)
 {
     zval *index_resource_zval;
     zend_long resolution;
-    double lat, lon;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
         return;
@@ -123,9 +122,6 @@ PHP_FUNCTION(h3ToGeo)
     // Get the center coordinates.
     GeoCoord center;
     h3ToGeo(*indexed, &center);
-
-    lat = radsToDegs(center.lat);
-    lon = radsToDegs(center.lon);
 
     zval lat_zval, lon_zval;
     ZVAL_DOUBLE(&lat_zval, radsToDegs(center.lat));
@@ -536,6 +532,32 @@ PHP_FUNCTION(maxH3ToChildrenSize)
     RETURN_LONG(childrenSize);
 }
 
+PHP_FUNCTION(degsToRads)
+{
+    double lat_lon;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "d", &lat_lon) == FAILURE) {
+        return;
+    }
+
+    double radians_lat_lon = degsToRads(lat_lon);
+
+    RETURN_DOUBLE(radians_lat_lon);
+}
+
+PHP_FUNCTION(radsToDegs)
+{
+    double lat_lon;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "d", &lat_lon) == FAILURE) {
+        return;
+    }
+
+    double degrees_lat_lon = radsToDegs(lat_lon);
+
+    RETURN_DOUBLE(degrees_lat_lon);
+}
+
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -642,6 +664,10 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(maxH3ToChildrenSize,    NULL)
 
     PHP_FE(h3Distance,    NULL)
+
+    // Miscellaneous H3 functions
+    PHP_FE(degsToRads,    NULL)
+    PHP_FE(radsToDegs,    NULL)
 
     PHP_FE_END    /* Must be the last line in h3_functions[] */
 };

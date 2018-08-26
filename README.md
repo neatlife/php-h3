@@ -102,8 +102,8 @@ extension=h3.so
 
 ### Miscellaneous
 
-- [ ] degsToRads
-- [ ] radsToDegs
+- [X] degsToRads
+- [X] radsToDegs
 - [ ] hexAreaKm2
 - [ ] hexAreaM2
 - [ ] edgeLengthKm
@@ -160,4 +160,8 @@ var_dump(h3ToParent($index, 5));
 var_dump(h3ToChildren($index, 2));
 
 var_dump(maxH3ToChildrenSize($index, 2));
+
+var_dump($rads = degsToRads(40.689167));
+
+var_dump(radsToDegs($rads));
 ```
