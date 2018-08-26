@@ -502,12 +502,23 @@ PHP_FUNCTION(h3ToChildren)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-    H3Index h3Children;
-    h3ToChildren(*indexed, childrenRes, &h3Children);
+    int childrenSize = maxH3ToChildrenSize(*indexed, childrenRes);
+    H3Index h3Childrens[childrenSize];
+    h3ToChildren(*indexed, childrenRes, h3Childrens);
 
-    zend_resource *index_resource = zend_register_resource(&h3Children, le_h3_index);
+    zval h3Children_zvals;
+    array_init(&h3Children_zvals);
 
-    RETURN_RES(index_resource);
+    for (int i = 0; i < childrenSize; i++) {
+        zend_resource *h3Children_resource = zend_register_resource(&h3Childrens[i], le_h3_index);
+        zval h3Children_zval;
+
+        ZVAL_RES(&h3Children_zval, h3Children_resource);
+
+        zend_hash_index_add(Z_ARRVAL(h3Children_zvals), i, &h3Children_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(h3Children_zvals));
 }
 
 /* The previous line is meant for vim and emacs, so it can correctly fold and
