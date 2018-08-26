@@ -48,4 +48,14 @@ var_dump($rads = degsToRads(40.689167));
 
 var_dump(radsToDegs($rads));
 
+var_dump(hexAreaKm2(10));
+
+var_dump(hexAreaM2(10));
+
+var_dump(edgeLengthKm(10));
+
+var_dump(edgeLengthM(10));
+
+var_dump(numHexagons(2));
+
 echo "hello world\n";

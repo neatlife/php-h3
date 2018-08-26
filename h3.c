@@ -558,6 +558,71 @@ PHP_FUNCTION(radsToDegs)
     RETURN_DOUBLE(degrees_lat_lon);
 }
 
+PHP_FUNCTION(hexAreaKm2)
+{
+    zend_long res;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &res) == FAILURE) {
+        return;
+    }
+
+    double kilometers = hexAreaKm2(res);
+
+    RETURN_DOUBLE(kilometers);
+}
+
+PHP_FUNCTION(hexAreaM2)
+{
+    zend_long res;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &res) == FAILURE) {
+        return;
+    }
+
+    double meters = hexAreaM2(res);
+
+    RETURN_DOUBLE(meters);
+}
+
+PHP_FUNCTION(edgeLengthKm)
+{
+    zend_long res;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &res) == FAILURE) {
+        return;
+    }
+
+    double kilometers = edgeLengthKm(res);
+
+    RETURN_DOUBLE(kilometers);
+}
+
+PHP_FUNCTION(edgeLengthM)
+{
+    zend_long res;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &res) == FAILURE) {
+        return;
+    }
+
+    double meters = edgeLengthM(res);
+
+    RETURN_DOUBLE(meters);
+}
+
+PHP_FUNCTION(numHexagons)
+{
+    zend_long res;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &res) == FAILURE) {
+        return;
+    }
+
+    zend_long number_of_indexes = numHexagons(res);
+
+    RETURN_LONG(number_of_indexes);
+}
+
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -668,6 +733,11 @@ const zend_function_entry h3_functions[] = {
     // Miscellaneous H3 functions
     PHP_FE(degsToRads,    NULL)
     PHP_FE(radsToDegs,    NULL)
+    PHP_FE(hexAreaKm2,    NULL)
+    PHP_FE(hexAreaM2,    NULL)
+    PHP_FE(edgeLengthKm,    NULL)
+    PHP_FE(edgeLengthM,    NULL)
+    PHP_FE(numHexagons,    NULL)
 
     PHP_FE_END    /* Must be the last line in h3_functions[] */
 };

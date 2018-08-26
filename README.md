@@ -104,11 +104,11 @@ extension=h3.so
 
 - [X] degsToRads
 - [X] radsToDegs
-- [ ] hexAreaKm2
-- [ ] hexAreaM2
-- [ ] edgeLengthKm
-- [ ] edgeLengthM
-- [ ] numHexagons
+- [X] hexAreaKm2
+- [X] hexAreaM2
+- [X] edgeLengthKm
+- [X] edgeLengthM
+- [X] numHexagons
 
 ## Function
 
@@ -164,4 +164,14 @@ var_dump(maxH3ToChildrenSize($index, 2));
 var_dump($rads = degsToRads(40.689167));
 
 var_dump(radsToDegs($rads));
+
+var_dump(hexAreaKm2(10));
+
+var_dump(hexAreaM2(10));
+
+var_dump(edgeLengthKm(10));
+
+var_dump(edgeLengthM(10));
+
+var_dump(numHexagons(2));
 ```
