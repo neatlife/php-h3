@@ -52,6 +52,11 @@ extension=h3.so
 
 ## ☑ TODO
 
+### Global Helpers
+
+- [X] h3ToLong
+- [X] h3FromLong
+
 ### Indexing
 
 - [X] geoToH3

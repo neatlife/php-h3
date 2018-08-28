@@ -41,3 +41,5 @@ before_script:
   - echo 'extension = h3.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 script:
   - php tests/h3.php
+  - php examples/index.php
+  - php examples/neighbors.php

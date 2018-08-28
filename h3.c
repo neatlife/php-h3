@@ -36,7 +36,6 @@ ZEND_DECLARE_MODULE_GLOBALS(h3)
 static int le_h3;
 
 // extension global var
-H3Index current_indexed;
 
 /* {{{ PHP_INI
  */
@@ -53,6 +52,35 @@ PHP_INI_END()
    purposes. */
 
 /* Every user-visible function in PHP should document itself in the source */
+PHP_FUNCTION(h3FromLong)
+{
+    zend_long h3_long;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &h3_long) == FAILURE) {
+        return;
+    }
+
+    H3Index indexed = h3_long;
+
+    zend_resource *index_resource = zend_register_resource(&indexed, le_h3_index);
+
+    RETURN_RES(index_resource);
+}
+
+PHP_FUNCTION(h3ToLong)
+{
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    zend_long h3_long = *indexed;
+
+    RETURN_LONG(h3_long);
+}
+
 PHP_FUNCTION(geoToH3)
 {
     zend_long resolution;
@@ -66,9 +94,9 @@ PHP_FUNCTION(geoToH3)
     location.lat = degsToRads(lat);
     location.lon = degsToRads(lon);
 
-    current_indexed = geoToH3(&location, resolution);
+    H3Index indexed = geoToH3(&location, resolution);
 
-    zend_resource *index_resource = zend_register_resource(&current_indexed, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(&indexed, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -260,14 +288,25 @@ PHP_FUNCTION(kRing)
     }
 
     int arr_count = maxKringSize(k);
-    H3Index out[arr_count];
+    H3Index outs[arr_count];
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 
-    kRing(*indexed, k, out);
+    kRing(*indexed, k, outs);
 
-    zend_resource *out_resource = zend_register_resource(&out, le_h3_index);
+    zval out_zvals;
+    array_init(&out_zvals);
 
-    RETURN_RES(out_resource);
+    for (int i = 0; i < arr_count; i++) {
+        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zval out_zval;
+        zval distance_zval;
+
+        ZVAL_RES(&out_zval, out_resource);
+
+        zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(out_zvals));
 }
 
 PHP_FUNCTION(maxKringSize)
@@ -418,7 +457,7 @@ PHP_FUNCTION(hexRanges)
     int arr_count = maxKringSize(k) * length;
 
     H3Index outs[arr_count];
-    if (hexRanges(indexed, length, k, outs) != 0) {
+    if (hexRanges(*indexed, length, k, outs) != 0) {
         RETURN_FALSE;
     }
 
@@ -795,6 +834,10 @@ PHP_MINFO_FUNCTION(h3)
  * Every user visible function must have an entry in h3_functions[].
  */
 const zend_function_entry h3_functions[] = {
+    // global helper
+    PHP_FE(h3ToLong,    NULL)
+    PHP_FE(h3FromLong,    NULL)
+
     // Indexing functions
     PHP_FE(geoToH3,    NULL)
     PHP_FE(h3ToGeoBoundary,    NULL)

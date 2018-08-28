@@ -3,7 +3,7 @@
 // map official examples/index.c
 $resolution = 10;
 $indexed = geoToH3(40.689167, -74.044444, $resolution);
-printf("The index resource is: %d\n", $indexed);
+printf("The index resource is: %d, long represent: %d\n", $indexed, h3ToLong($indexed));
 
 // Get the vertices of the H3 index.
 $boundaries = h3ToGeoBoundary($indexed);
