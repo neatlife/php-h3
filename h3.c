@@ -68,8 +68,6 @@ PHP_FUNCTION(geoToH3)
 
     current_indexed = geoToH3(&location, resolution);
 
-    php_printf("geoToH3 indexed: %d\n", current_indexed);
-
     zend_resource *index_resource = zend_register_resource(&current_indexed, le_h3_index);
 
     RETURN_RES(index_resource);
@@ -94,8 +92,8 @@ PHP_FUNCTION(h3ToGeoBoundary)
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
         zval lat, lon;
-        ZVAL_LONG(&lat, boundary.verts[v].lat);
-        ZVAL_LONG(&lon, boundary.verts[v].lon);
+        ZVAL_DOUBLE(&lat, boundary.verts[v].lat);
+        ZVAL_DOUBLE(&lon, boundary.verts[v].lon);
 
         zval lat_lon_arr;
         array_init(&lat_lon_arr);
