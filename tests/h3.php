@@ -64,5 +64,9 @@ var_dump(getH3UnidirectionalEdge($index, $index1));
 var_dump(h3UnidirectionalEdgeIsValid($index));
 var_dump(getOriginH3IndexFromUnidirectionalEdge($index));
 var_dump(getDestinationH3IndexFromUnidirectionalEdge($index));
+var_dump(getH3IndexesFromUnidirectionalEdge($index));
+var_dump(getH3UnidirectionalEdgesFromHexagon($index));
+var_dump(getH3UnidirectionalEdgeBoundary($index));
+
 
 echo "hello world\n";

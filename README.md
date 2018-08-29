@@ -109,9 +109,9 @@ extension=h3.so
 - [X] h3UnidirectionalEdgeIsValid
 - [X] getOriginH3IndexFromUnidirectionalEdge
 - [X] getDestinationH3IndexFromUnidirectionalEdge
-- [ ] getH3IndexesFromUnidirectionalEdge
-- [ ] getH3UnidirectionalEdgesFromHexagon
-- [ ] getH3UnidirectionalEdgeBoundary
+- [X] getH3IndexesFromUnidirectionalEdge
+- [X] getH3UnidirectionalEdgesFromHexagon
+- [X] getH3UnidirectionalEdgeBoundary
 
 ### Miscellaneous
 
@@ -190,4 +190,6 @@ var_dump(getH3UnidirectionalEdge($index, $index1));
 var_dump(h3UnidirectionalEdgeIsValid($index));
 var_dump(getOriginH3IndexFromUnidirectionalEdge($index));
 var_dump(getDestinationH3IndexFromUnidirectionalEdge($index));
+var_dump(getH3IndexesFromUnidirectionalEdge($index));
+var_dump(getH3UnidirectionalEdgesFromHexagon($index));
 ```

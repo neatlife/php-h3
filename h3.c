@@ -661,6 +661,93 @@ PHP_FUNCTION(getDestinationH3IndexFromUnidirectionalEdge)
     RETURN_RES(index_resource);
 }
 
+PHP_FUNCTION(getH3IndexesFromUnidirectionalEdge)
+{
+    zval *edge_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &edge_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *edge = (H3Index *) Z_RES_VAL_P(edge_index_resource_zval);
+	H3Index originDestination[2];
+    getH3IndexesFromUnidirectionalEdge(*edge, originDestination);
+
+    zval originDestination_zvals;
+    array_init(&originDestination_zvals);
+
+    for (int i = 0; i < 2; i++) {
+        zend_resource *originDestination_resource = zend_register_resource(&originDestination[i], le_h3_index);
+        zval originDestination_zval;
+
+        ZVAL_RES(&originDestination_zval, originDestination_resource);
+
+        zend_hash_index_add(Z_ARRVAL(originDestination_zvals), i, &originDestination_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(originDestination_zvals));
+}
+
+PHP_FUNCTION(getH3UnidirectionalEdgesFromHexagon)
+{
+    zval *edge_index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &edge_index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *edge = (H3Index *) Z_RES_VAL_P(edge_index_resource_zval);
+	H3Index edges[6];
+    getH3UnidirectionalEdgesFromHexagon(*edge, edges);
+
+    zval edges_zvals;
+    array_init(&edges_zvals);
+
+    for (int i = 0; i < 6; i++) {
+        zend_resource *edges_resource = zend_register_resource(&edges[i], le_h3_index);
+        zval edges_zval;
+
+        ZVAL_RES(&edges_zval, edges_resource);
+
+        zend_hash_index_add(Z_ARRVAL(edges_zvals), i, &edges_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(edges_zvals));
+}
+
+PHP_FUNCTION(getH3UnidirectionalEdgeBoundary)
+{
+    zval *index_resource_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &index_resource_zval) == FAILURE) {
+        return;
+    }
+
+    H3Index *edge = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    // Get the vertices of the H3 index.
+    GeoBoundary boundary;
+    getH3UnidirectionalEdgeBoundary(*edge, &boundary);
+
+    zval boundary_arr;
+    array_init(&boundary_arr);
+    // Indexes can have different number of vertices under some cases,
+    // which is why boundary.numVerts is needed.
+    for (int v = 0; v < boundary.numVerts; v++) {
+        zval lat, lon;
+        ZVAL_DOUBLE(&lat, boundary.verts[v].lat);
+        ZVAL_DOUBLE(&lon, boundary.verts[v].lon);
+
+        zval lat_lon_arr;
+        array_init(&lat_lon_arr);
+        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 0, &lat);
+        zend_hash_index_add(Z_ARRVAL(lat_lon_arr), 1, &lon);
+
+        zend_hash_index_add(Z_ARRVAL(boundary_arr), v, &lat_lon_arr);
+    }
+
+    RETURN_ARR(Z_ARRVAL(boundary_arr));
+}
+
 PHP_FUNCTION(degsToRads)
 {
     double lat_lon;
@@ -876,6 +963,9 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(h3UnidirectionalEdgeIsValid,    NULL)
     PHP_FE(getOriginH3IndexFromUnidirectionalEdge,    NULL)
     PHP_FE(getDestinationH3IndexFromUnidirectionalEdge,    NULL)
+    PHP_FE(getH3IndexesFromUnidirectionalEdge,    NULL)
+    PHP_FE(getH3UnidirectionalEdgesFromHexagon,    NULL)
+    PHP_FE(getH3UnidirectionalEdgeBoundary,    NULL)
 
     // Miscellaneous H3 functions
     PHP_FE(degsToRads,    NULL)
