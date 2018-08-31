@@ -569,6 +569,116 @@ PHP_FUNCTION(maxH3ToChildrenSize)
     RETURN_LONG(childrenSize);
 }
 
+PHP_FUNCTION(h3Compact)
+{
+    zval *compactedSet_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &compactedSet_zval) == FAILURE) {
+        return;
+    }
+
+    int length = zend_hash_num_elements(Z_ARRVAL_P(compactedSet_zval));
+    H3Index *indexed[length];
+    zval *h3Indexed_zval;
+    int i;
+    ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(compactedSet_zval), i, h3Indexed_zval) {
+        indexed[i] = Z_RES_VAL_P(h3Indexed_zval);
+    } ZEND_HASH_FOREACH_END();
+
+    H3Index outs[length];
+    if (compact(indexed, outs, length) != 0) {
+        RETURN_FALSE;
+    }
+
+    zval out_zvals;
+    array_init(&out_zvals);
+
+    for (int i = 0; i < length; i++) {
+        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zval out_zval;
+
+        ZVAL_RES(&out_zval, out_resource);
+
+        zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(out_zvals));
+}
+
+PHP_FUNCTION(uncompact)
+{
+    zend_long uncompactRes;
+    zval *compactedSet_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "al", &compactedSet_zval, &uncompactRes) == FAILURE) {
+        return;
+    }
+
+    int length = zend_hash_num_elements(Z_ARRVAL_P(compactedSet_zval));
+    H3Index *indexed[length];
+    zval *h3Indexed_zval;
+    int i;
+    ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(compactedSet_zval), i, h3Indexed_zval) {
+        indexed[i] = Z_RES_VAL_P(h3Indexed_zval);
+    } ZEND_HASH_FOREACH_END();
+
+    int compactedCount = 0;
+    for (int i = 0; i < length; i++) {
+        if (indexed[i] != 0) {
+            compactedCount++;
+        }
+    }
+
+    int uncompactedSize = maxUncompactSize(indexed, length, uncompactRes);
+    H3Index outs[uncompactedSize];
+    if (uncompact(indexed, compactedCount, outs, uncompactedSize, uncompactRes) != 0) {
+        RETURN_FALSE;
+    }
+
+    zval out_zvals;
+    array_init(&out_zvals);
+
+    for (int i = 0; i < uncompactedSize; i++) {
+        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zval out_zval;
+
+        ZVAL_RES(&out_zval, out_resource);
+
+        zend_hash_index_add(Z_ARRVAL(out_zvals), i, &out_zval);
+    }
+
+    RETURN_ARR(Z_ARRVAL(out_zvals));
+}
+
+PHP_FUNCTION(maxUncompactSize)
+{
+    zend_long uncompactRes;
+    zval *compactedSet_zval;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "al", &compactedSet_zval, &uncompactRes) == FAILURE) {
+        return;
+    }
+
+    int length = zend_hash_num_elements(Z_ARRVAL_P(compactedSet_zval));
+    H3Index *indexed[length];
+    zval *h3Indexed_zval;
+    int i;
+    ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(compactedSet_zval), i, h3Indexed_zval) {
+        indexed[i] = Z_RES_VAL_P(h3Indexed_zval);
+    } ZEND_HASH_FOREACH_END();
+
+    int compactedCount = 0;
+    for (int i = 0; i < length; i++) {
+        if (indexed[i] != 0) {
+            compactedCount++;
+        }
+    }
+
+    zend_long uncompactedSize = maxUncompactSize(indexed, length, uncompactRes);
+
+    RETURN_LONG(uncompactedSize);
+}
+
 PHP_FUNCTION(h3IndexesAreNeighbors)
 {
     zval *origin_index_resource_zval;
@@ -951,6 +1061,9 @@ const zend_function_entry h3_functions[] = {
     PHP_FE(h3ToParent,    NULL)
     PHP_FE(h3ToChildren,    NULL)
     PHP_FE(maxH3ToChildrenSize,    NULL)
+    PHP_FE(h3Compact,    NULL)
+    PHP_FE(uncompact,    NULL)
+    PHP_FE(maxUncompactSize,    NULL)
 
     // Distance functions
     PHP_FE(h3Distance,    NULL)

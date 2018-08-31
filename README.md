@@ -91,9 +91,9 @@ extension=h3.so
 - [X] h3ToParent
 - [X] h3ToChildren
 - [X] maxH3ToChildrenSize
-- [ ] compact
-- [ ] uncompact
-- [ ] maxUncompactSize
+- [X] compact
+- [X] uncompact
+- [X] maxUncompactSize
 
 ### Regions
 
@@ -192,4 +192,9 @@ var_dump(getOriginH3IndexFromUnidirectionalEdge($index));
 var_dump(getDestinationH3IndexFromUnidirectionalEdge($index));
 var_dump(getH3IndexesFromUnidirectionalEdge($index));
 var_dump(getH3UnidirectionalEdgesFromHexagon($index));
+var_dump(getH3UnidirectionalEdgeBoundary($index));
+
+var_dump($compacts = h3Compact([$index, $index1]));
+var_dump(uncompact($compacts, 2));
+var_dump(maxUncompactSize($compacts, 2));
 ```

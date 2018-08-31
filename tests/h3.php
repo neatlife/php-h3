@@ -68,5 +68,8 @@ var_dump(getH3IndexesFromUnidirectionalEdge($index));
 var_dump(getH3UnidirectionalEdgesFromHexagon($index));
 var_dump(getH3UnidirectionalEdgeBoundary($index));
 
+var_dump($compacts = h3Compact([$index, $index1]));
+var_dump(uncompact($compacts, 2));
+var_dump(maxUncompactSize($compacts, 2));
 
 echo "hello world\n";
