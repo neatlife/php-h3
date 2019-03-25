@@ -49,7 +49,18 @@ enable h3.so extension in your php configration:
 ```
 extension=h3.so
 ```
+修复原版geoToH3 得到h3index 之后再h3ToGeo得到的值不一样的问题
+zend_register_resource（ &indexed, le_h3_index)
+后在
+H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+获得的*indexed值不对
+此处改为了 zend_register_resource（ indexed, le_h3_index)
+H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+使用indexed 问题解决了  但原理咱不是很懂  有懂的大佬再修复修复其他的
 
+只处理了geoToH3 h3ToLong h3GetResolution h3ToGeo kRing h3ToGeoBoundary h3GetBaseCell h3IsValid h3IsResClassIII h3IsPentagon hexRange方法
+
+h3ToGeoBoundary中原版输出的lat lon 没有进行radsToDegs操作此处增加了
 ## ☑ TODO
 
 ### Global Helpers
