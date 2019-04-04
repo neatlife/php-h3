@@ -62,7 +62,7 @@ PHP_FUNCTION(h3FromLong)
 
     H3Index indexed = h3_long;
 
-    zend_resource *index_resource = zend_register_resource(&indexed, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(indexed, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -75,8 +75,8 @@ PHP_FUNCTION(h3ToLong)
         return;
     }
 
-    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-    zend_long h3_long = *indexed;
+    H3Index  *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    zend_long h3_long = indexed;
 
     RETURN_LONG(h3_long);
 }
@@ -95,8 +95,7 @@ PHP_FUNCTION(geoToH3)
     location.lon = degsToRads(lon);
 
     H3Index indexed = geoToH3(&location, resolution);
-
-    zend_resource *index_resource = zend_register_resource(&indexed, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(indexed, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -109,10 +108,10 @@ PHP_FUNCTION(h3ToGeoBoundary)
         return;
     }
 
-    H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
+    H3Index indexed = (H3Index ) Z_RES_VAL_P(index_resource_zval);
     // Get the vertices of the H3 index.
     GeoBoundary boundary;
-    h3ToGeoBoundary(*indexed, &boundary);
+    h3ToGeoBoundary(indexed, &boundary);
 
     zval boundary_arr;
     array_init(&boundary_arr);
@@ -120,8 +119,12 @@ PHP_FUNCTION(h3ToGeoBoundary)
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
         zval lat, lon;
-        ZVAL_DOUBLE(&lat, boundary.verts[v].lat);
-        ZVAL_DOUBLE(&lon, boundary.verts[v].lon);
+        //ZVAL_DOUBLE(&lat, boundary.verts[v].lat);
+        //ZVAL_DOUBLE(&lon, boundary.verts[v].lon);
+
+        ZVAL_DOUBLE(&lat, radsToDegs(boundary.verts[v].lat));
+        ZVAL_DOUBLE(&lon, radsToDegs(boundary.verts[v].lon));
+
 
         zval lat_lon_arr;
         array_init(&lat_lon_arr);
@@ -147,7 +150,7 @@ PHP_FUNCTION(h3ToGeo)
 
     // Get the center coordinates.
     GeoCoord center;
-    h3ToGeo(*indexed, &center);
+    h3ToGeo(indexed, &center);
 
     zval lat_zval, lon_zval;
     ZVAL_DOUBLE(&lat_zval, radsToDegs(center.lat));
@@ -170,8 +173,7 @@ PHP_FUNCTION(h3GetResolution)
     }
     H3Index *indexed = Z_RES_VAL_P(index_resource_zval);
 
-    php_printf("h3GetResolution indexed: %d\n", *indexed);
-    int resolution = h3GetResolution(*indexed);
+    int resolution = h3GetResolution(indexed);
 
     RETURN_LONG(resolution);
 }
@@ -185,7 +187,7 @@ PHP_FUNCTION(h3GetBaseCell)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-    int base_cell = base_cell = h3GetBaseCell(*indexed);
+    int base_cell = base_cell = h3GetBaseCell(indexed);
 
     RETURN_LONG(base_cell);
 }
@@ -203,7 +205,7 @@ PHP_FUNCTION(stringToH3)
     H3Index indexed = (H3Index) stringToH3(str);
 
     zend_resource *index_resource;
-    index_resource = zend_register_resource(&indexed, le_h3_index);
+    index_resource = zend_register_resource(indexed, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -234,7 +236,7 @@ PHP_FUNCTION(h3IsValid)
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 
-    if (h3IsValid(*indexed) == 0) {
+    if (h3IsValid(indexed) == 0) {
         RETURN_FALSE;
     } else {
         RETURN_TRUE;
@@ -250,9 +252,8 @@ PHP_FUNCTION(h3IsResClassIII)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-    php_printf("h3IsResClassIII indexed: %d\n", *indexed);
 
-    if (h3IsResClassIII(*indexed) == 0) {
+    if (h3IsResClassIII(indexed) == 0) {
         RETURN_FALSE;
     } else {
         RETURN_TRUE;
@@ -268,8 +269,7 @@ PHP_FUNCTION(h3IsPentagon)
     }
 
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
-    php_printf("h3IsPentagon indexed: %d\n", *indexed);
-    int is_valid = h3IsPentagon(*indexed);
+    int is_valid = h3IsPentagon(indexed);
 
     if (is_valid == 0) {
         RETURN_FALSE;
@@ -291,13 +291,13 @@ PHP_FUNCTION(kRing)
     H3Index outs[arr_count];
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 
-    kRing(*indexed, k, outs);
+    kRing(indexed, k, outs);
 
     zval out_zvals;
     array_init(&out_zvals);
 
     for (int i = 0; i < arr_count; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
         zval distance_zval;
 
@@ -344,7 +344,7 @@ PHP_FUNCTION(kRingDistances)
     array_init(&distance_zvals);
 
     for (int i = 0; i < arr_count; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
         zval distance_zval;
 
@@ -376,7 +376,7 @@ PHP_FUNCTION(hexRange)
     int arr_count = maxKringSize(k);
 
     H3Index outs[arr_count];
-    if (hexRange(*indexed, k, outs) != 0) {
+    if (hexRange(indexed, k, outs) != 0) {
         RETURN_FALSE;
     }
 
@@ -384,7 +384,7 @@ PHP_FUNCTION(hexRange)
     array_init(&out_zvals);
 
     for (int i = 0; i < arr_count; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
 
         ZVAL_RES(&out_zval, out_resource);
@@ -418,7 +418,7 @@ PHP_FUNCTION(hexRangeDistances)
     array_init(&distance_zvals);
 
     for (int i = 0; i < arr_count; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
         zval distance_zval;
 
@@ -465,7 +465,7 @@ PHP_FUNCTION(hexRanges)
     array_init(&out_zvals);
 
     for (int i = 0; i < arr_count; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
 
         ZVAL_RES(&out_zval, out_resource);
@@ -497,7 +497,7 @@ PHP_FUNCTION(hexRing)
     array_init(&out_zvals);
 
     for (int i = 0; i < arr_count; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
 
         ZVAL_RES(&out_zval, out_resource);
@@ -520,7 +520,7 @@ PHP_FUNCTION(h3ToParent)
     H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
     H3Index h3Parent = h3ToParent(*indexed, parentRes);
 
-    zend_resource *index_resource = zend_register_resource(&h3Parent, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(h3Parent, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -543,7 +543,7 @@ PHP_FUNCTION(h3ToChildren)
     array_init(&h3Children_zvals);
 
     for (int i = 0; i < childrenSize; i++) {
-        zend_resource *h3Children_resource = zend_register_resource(&h3Childrens[i], le_h3_index);
+        zend_resource *h3Children_resource = zend_register_resource(h3Childrens[i], le_h3_index);
         zval h3Children_zval;
 
         ZVAL_RES(&h3Children_zval, h3Children_resource);
@@ -594,7 +594,7 @@ PHP_FUNCTION(h3Compact)
     array_init(&out_zvals);
 
     for (int i = 0; i < length; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
 
         ZVAL_RES(&out_zval, out_resource);
@@ -639,7 +639,7 @@ PHP_FUNCTION(uncompact)
     array_init(&out_zvals);
 
     for (int i = 0; i < uncompactedSize; i++) {
-        zend_resource *out_resource = zend_register_resource(&outs[i], le_h3_index);
+        zend_resource *out_resource = zend_register_resource(outs[i], le_h3_index);
         zval out_zval;
 
         ZVAL_RES(&out_zval, out_resource);
@@ -715,7 +715,7 @@ PHP_FUNCTION(getH3UnidirectionalEdge)
         RETURN_FALSE;
     }
 
-    zend_resource *index_resource = zend_register_resource(&index, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(index, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -749,7 +749,7 @@ PHP_FUNCTION(getOriginH3IndexFromUnidirectionalEdge)
 
     H3Index index = getOriginH3IndexFromUnidirectionalEdge(*edge);
 
-    zend_resource *index_resource = zend_register_resource(&index, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(index, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -766,7 +766,7 @@ PHP_FUNCTION(getDestinationH3IndexFromUnidirectionalEdge)
 
     H3Index index = getDestinationH3IndexFromUnidirectionalEdge(*edge);
 
-    zend_resource *index_resource = zend_register_resource(&index, le_h3_index);
+    zend_resource *index_resource = zend_register_resource(index, le_h3_index);
 
     RETURN_RES(index_resource);
 }
@@ -787,7 +787,7 @@ PHP_FUNCTION(getH3IndexesFromUnidirectionalEdge)
     array_init(&originDestination_zvals);
 
     for (int i = 0; i < 2; i++) {
-        zend_resource *originDestination_resource = zend_register_resource(&originDestination[i], le_h3_index);
+        zend_resource *originDestination_resource = zend_register_resource(originDestination[i], le_h3_index);
         zval originDestination_zval;
 
         ZVAL_RES(&originDestination_zval, originDestination_resource);
@@ -814,7 +814,7 @@ PHP_FUNCTION(getH3UnidirectionalEdgesFromHexagon)
     array_init(&edges_zvals);
 
     for (int i = 0; i < 6; i++) {
-        zend_resource *edges_resource = zend_register_resource(&edges[i], le_h3_index);
+        zend_resource *edges_resource = zend_register_resource(edges[i], le_h3_index);
         zval edges_zval;
 
         ZVAL_RES(&edges_zval, edges_resource);
@@ -844,8 +844,11 @@ PHP_FUNCTION(getH3UnidirectionalEdgeBoundary)
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
         zval lat, lon;
-        ZVAL_DOUBLE(&lat, boundary.verts[v].lat);
-        ZVAL_DOUBLE(&lon, boundary.verts[v].lon);
+
+    //ZVAL_DOUBLE(&lat_zval, radsToDegs(center.lat));
+    //ZVAL_DOUBLE(&lon_zval, radsToDegs(center.lon));
+        ZVAL_DOUBLE(&lat, radsToDegs(boundary.verts[v].lat));
+        ZVAL_DOUBLE(&lon, radsToDegs(boundary.verts[v].lon));
 
         zval lat_lon_arr;
         array_init(&lat_lon_arr);
