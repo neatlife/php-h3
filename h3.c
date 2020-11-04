@@ -963,23 +963,23 @@ PHP_FUNCTION(polyfill)
     Geofence *holes_geofaces = (Geofence *)calloc(holesnum, sizeof(Geofence));
 
     zval *holesnum_geoface_zval;
-    GeoCoord *holes_verts;
 
     ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(holes_zval), i, holesnum_geoface_zval)
     {
         int holes_vertsnum = zend_hash_num_elements(Z_ARRVAL_P(holesnum_geoface_zval));
-        holes_verts = (GeoCoord *)calloc(holes_vertsnum, sizeof(GeoCoord));
+        GeoCoord *holes_verts = (GeoCoord *)calloc(holes_vertsnum, sizeof(GeoCoord));
         zval *holes_verts_zval;
         ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(holesnum_geoface_zval), j, holes_verts_zval)
         {
             GeoCoord vert;
             vert.lat = degsToRads(Z_DVAL_P(zend_hash_str_find(Z_ARRVAL_P(holes_verts_zval), "lat", 3)));
             vert.lon = degsToRads(Z_DVAL_P(zend_hash_str_find(Z_ARRVAL_P(holes_verts_zval), "lon", 3)));
-            holes_verts[i] = vert;
+            holes_verts[j] = vert;
         }
         ZEND_HASH_FOREACH_END();
         Geofence holes_geoface = {holes_vertsnum, holes_verts};
         holes_geofaces[i] = holes_geoface;
+        free(holes_verts);
     }
     ZEND_HASH_FOREACH_END();
 
@@ -998,7 +998,6 @@ PHP_FUNCTION(polyfill)
 
     free(geofence_verts);
     free(holes_geofaces);
-    free(holes_verts);
     free(polyfillOut);
 }
 
@@ -1037,23 +1036,23 @@ PHP_FUNCTION(maxPolyfillSize)
     Geofence *holes_geofaces = (Geofence *)calloc(holesnum, sizeof(Geofence));
 
     zval *holesnum_geoface_zval;
-    GeoCoord *holes_verts;
 
     ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(holes_zval), i, holesnum_geoface_zval)
     {
         int holes_vertsnum = zend_hash_num_elements(Z_ARRVAL_P(holesnum_geoface_zval));
-        holes_verts = (GeoCoord *)calloc(holes_vertsnum, sizeof(GeoCoord));
+        GeoCoord *holes_verts = (GeoCoord *)calloc(holes_vertsnum, sizeof(GeoCoord));
         zval *holes_verts_zval;
         ZEND_HASH_FOREACH_NUM_KEY_VAL(Z_ARRVAL_P(holesnum_geoface_zval), j, holes_verts_zval)
         {
             GeoCoord vert;
             vert.lat = degsToRads(Z_DVAL_P(zend_hash_str_find(Z_ARRVAL_P(holes_verts_zval), "lat", 3)));
             vert.lon = degsToRads(Z_DVAL_P(zend_hash_str_find(Z_ARRVAL_P(holes_verts_zval), "lon", 3)));
-            holes_verts[i] = vert;
+            holes_verts[j] = vert;
         }
         ZEND_HASH_FOREACH_END();
         Geofence holes_geoface = {holes_vertsnum, holes_verts};
         holes_geofaces[i] = holes_geoface;
+        free(holes_verts);
     }
     ZEND_HASH_FOREACH_END();
 
@@ -1063,7 +1062,6 @@ PHP_FUNCTION(maxPolyfillSize)
 
     free(geofence_verts);
     free(holes_geofaces);
-    free(holes_verts);
 
     RETURN_LONG(polyfillsize);
 }
@@ -1091,6 +1089,8 @@ PHP_FUNCTION(h3SetToLinkedGeo)
     ZEND_HASH_FOREACH_END();
 
     h3SetToLinkedGeo(h3set, numHexes, &polygon);
+
+    free(h3set);
 
     LinkedGeoPolygon *polygonloop = &polygon;
     array_init(return_value);
@@ -1334,6 +1334,8 @@ PHP_FUNCTION(getRes0Indexes)
     {
         add_index_long(return_value, i, outs[i]);
     }
+
+    free(outs);
 }
 
 PHP_FUNCTION(res0IndexCount)
