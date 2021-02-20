@@ -82,5 +82,5 @@ if test "$PHP_H3" != "no"; then
   PHP_SUBST(H3_SHARED_LIBADD)
 
   LIBS="-lh3 $LIBS"
-  PHP_NEW_EXTENSION(h3, distance.c h3.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  PHP_NEW_EXTENSION(h3, h3.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi

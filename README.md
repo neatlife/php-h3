@@ -42,6 +42,55 @@ then compile and install h3 php binding:
 % make install
 ```
 
+## Building php_h3 on Windows
+
+building h3 library
+[Building H3 on Windows](https://github.com/uber/h3/blob/master/dev-docs/build_windows.md)
+
+```bash
+mkdir build
+cd build
+cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DH3_ALLOC_PREFIX= ..
+msbuild ALL_BUILD.vcxproj
+msbuild RUN_TESTS.vcxproj
+```
+
+Copy h3.dll to php root directory
+
+Add the php root directory to the system environment variable path
+
+download [php-sdk-binary-tools](https://github.com/Microsoft/php-sdk-binary-tools) and php  source,PHP version:PHP 7.0+
+
+building php_h3
+[Build your own PHP on Windows](https://wiki.php.net/internals/windows/stepbystepbuild_sdk_2)
+
+c:\php-sdk\phpsdk-vc15-x64.bat
+
+If using Microsoft Build Tools 2019 run phpsdk-vc15-x64.bat,modify php-sdk\bin\phpsdk_setshell.bat to support
+
+Copy php_h3 to source directory \ext\
+
+Copy h3api.h to php_h3 directory
+
+Add the following code to h3.c
+
+```c
+#pragma comment(lib, "C:\\php-sdk\\h3-master\\build\\bin\\Debug\\h3.lib")
+#pragma comment(linker, "/NODEFAULTLIB:msvcrtd.lib")
+```
+
+Enter your PHP source directory
+
+
+```bash
+
+buildconf
+configure --disable-all --enable-cli --enable-h3=shared
+
+```
+Copy php_h3.dll to php extension_dir
+
+
 ## Configration
 
 enable h3.so extension in your php configration:
@@ -49,6 +98,9 @@ enable h3.so extension in your php configration:
 ```
 extension=h3.so
 ```
+
+
+
 修复原版geoToH3 得到h3index 之后再h3ToGeo得到的值不一样的问题
 zend_register_resource（ &indexed, le_h3_index)
 后在
@@ -61,12 +113,24 @@ H3Index *indexed = (H3Index *) Z_RES_VAL_P(index_resource_zval);
 只处理了geoToH3 h3ToLong h3GetResolution h3ToGeo kRing h3ToGeoBoundary h3GetBaseCell h3IsValid h3IsResClassIII h3IsPentagon hexRange方法
 
 h3ToGeoBoundary中原版输出的lat lon 没有进行radsToDegs操作此处增加了
+
+php资源类型用于存储文件句柄，mysql链接等指针类型的数据。把 H3index（int64_t）当成资源类型，在geotoh3存地址后会销毁内存，再取地址就是随机数了，把本身当指针存，取出时自然也不能取地址内的内存。
+
+h3返回H3的索引值H3index最多占63个比特，8字节；php7 以后"l" 对应的c类型为 zend_long 也是一个8字节无符号整形，所以将程序返回类型改为zend_long。
+
+其他返回结构体（如经纬度），在 PHP 中可以使用数组（HashTable）和对象类型，为编码简单选用了数组类型。
+
+部分函数返回结果未经测试，欢迎测试后提交bug或者直接修改。
+
+Windows编译器不支持变长数组，都改为了calloc()，Linux使用可以改为变长数组。
+
+
 ## ☑ TODO
 
 ### Global Helpers
 
-- [X] h3ToLong
-- [X] h3FromLong
+- [X] h3ToLong (removed, pls use h3ToString)
+- [X] h3FromLong (removed, pls use stringToH3)
 
 ### Indexing
 

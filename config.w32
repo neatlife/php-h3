@@ -1,13 +1,13 @@
 // $Id$
 // vim:ft=javascript
 
-// If your extension references something external, use ARG_WITH
+// If your extension references something external, use
 // ARG_WITH("h3", "for h3 support", "no");
 
-// Otherwise, use ARG_ENABLE
-// ARG_ENABLE("h3", "enable h3 support", "no");
+// Otherwise, use
+ARG_ENABLE("h3", "enable h3 support", "yes,shared");
 
 if (PHP_H3 != "no") {
-	EXTENSION("h3", "h3.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+	EXTENSION("h3", "h3.c", PHP_H3_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
 }
 
