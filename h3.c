@@ -1512,6 +1512,8 @@ PHP_MINFO_FUNCTION(h3)
  * Every user visible function must have an entry in h3_functions[].
  */
 const zend_function_entry h3_functions[] = {
+  
+    // global helper
 
     //Indexing functions
     PHP_FE(geoToH3,		NULL)

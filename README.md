@@ -129,8 +129,8 @@ Windows编译器不支持变长数组，都改为了calloc()，Linux使用可以
 
 ### Global Helpers
 
-- [X] h3ToLong
-- [X] h3FromLong
+- [X] h3ToLong (removed, pls use h3ToString)
+- [X] h3FromLong (removed, pls use stringToH3)
 
 ### Indexing
 

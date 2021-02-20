@@ -2,11 +2,11 @@
 
 // map official examples/edge.c
 
-$origin = h3FromLong(0x8a2a1072b59ffff);
-$destination = h3FromLong(0x8a2a1072b597fff);  // north of the origin
+$origin = stringToH3('0x8a2a1072b59ffff');
+$destination = stringToH3('0x8a2a1072b597fff');  // north of the origin
 
 $edge = getH3UnidirectionalEdge($origin, $destination);
-printf("The edge is %d\n", h3ToLong($edge));
+printf("The edge is %s\n", h3ToString($edge));
 
 $boundaries = getH3UnidirectionalEdgeBoundary($edge);
 foreach ($boundaries as $bundary) {

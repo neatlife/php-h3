@@ -4,6 +4,8 @@ php:
   - 7.0
   - 7.1
   - 7.2
+  - 7.3
+  - 7.4
   - nightly
 env: CC=gcc
 matrix:
@@ -16,6 +18,10 @@ matrix:
       env: CC=clang
     - php: 7.2
       env: CC=clang
+    - php: 7.3
+    env: CC=clang
+    - php: 7.4
+    env: CC=clang
 addons:
   apt:
     packages:
